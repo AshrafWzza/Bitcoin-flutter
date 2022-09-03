@@ -6,4 +6,3 @@ A new Flutter project.
 ### Resources
 - [http Package](https://pub.dev/packages/http)
 - [https://www.coinapi.io/] //API
-
