@@ -37,6 +37,7 @@ class _PriceScreenState extends State<PriceScreen> {
                 }
                 return Container(
                   height: 50,
+                  //Gradient Colors
                   color: Colors.amber[200 + index % 4 * 100],
                   child: Center(child: Text('Entry ${entries[index - 1]}')),
                 );
