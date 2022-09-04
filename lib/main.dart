@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:untitled3/network_helper.dart';
-import 'package:untitled3/price_screen.dart';
+import 'package:bitcoin_ticker/price_screen.dart';
 
 void main() {
   runApp(const MyApp());

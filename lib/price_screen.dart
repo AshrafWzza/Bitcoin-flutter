@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:untitled3/network_helper.dart';
+import 'package:bitcoin_ticker/network_helper.dart';
 
 class PriceScreen extends StatefulWidget {
   const PriceScreen({Key? key}) : super(key: key);
