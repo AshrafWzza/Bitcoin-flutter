@@ -1,180 +1,53 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-import 'coin_data.dart';
-import 'dart:io' show Platform;
-
-const apiKey = '97586C47-214E-4083-85B7-AD60A38C1464';
-const apiCoinUrl = 'https://rest.coinapi.io/v1/exchangerate/';
+import 'package:untitled3/network_helper.dart';
 
 class PriceScreen extends StatefulWidget {
   const PriceScreen({Key? key}) : super(key: key);
 
   @override
-  _PriceScreenState createState() => _PriceScreenState();
+  State<PriceScreen> createState() => _PriceScreenState();
 }
 
 class _PriceScreenState extends State<PriceScreen> {
-  String? selectedCurrency = 'USD';
-  String? selectedFromCurrency = 'BTC';
-  double? rateValueBTC, rateValueETH, rateValueLTC;
-  var recievedDataBTC, recievedDataETH, recievedDataLTC;
-  DropdownButton<String> androidDropdown() {
-    List<DropdownMenuItem<String>> dropdownItems = [];
-    for (String currency in currenciesList) {
-      var newItem = DropdownMenuItem(
-        child: Text(currency),
-        value: currency,
-      );
-      dropdownItems.add(newItem);
-    }
-
-    return DropdownButton<String>(
-      value: selectedCurrency,
-      items: dropdownItems,
-      onChanged: (value) {
-        setState(() {
-          selectedCurrency = value;
-          getData();
-        });
-      },
-    );
-  }
-
-  CupertinoPicker iOSPicker() {
-    List<Text> pickerItems = [];
-    for (String currency in currenciesList) {
-      pickerItems.add(Text(currency));
-    }
-
-    return CupertinoPicker(
-      backgroundColor: Colors.lightBlue,
-      itemExtent: 32.0,
-      onSelectedItemChanged: (selectedIndex) {
-        print(selectedIndex);
-      },
-      children: pickerItems,
-    );
-  }
-
-  Future<dynamic>? getData() async {
-    CoinData coinDataBTC =
-        CoinData('$apiCoinUrl' 'BTC' '/' '$selectedCurrency?apikey=$apiKey');
-    CoinData coinDataETH =
-        CoinData('$apiCoinUrl' 'ETH' '/' '$selectedCurrency?apikey=$apiKey');
-    CoinData coinDataLTC =
-        CoinData('$apiCoinUrl' 'LTC' '/' '$selectedCurrency?apikey=$apiKey');
-    recievedDataBTC = await coinDataBTC.getData();
-    recievedDataETH = await coinDataETH.getData();
-    recievedDataLTC = await coinDataLTC.getData();
-    setState(() {
-      selectedCurrency = recievedDataBTC['asset_id_quote'];
-      rateValueBTC = recievedDataBTC['rate'];
-      rateValueETH = recievedDataETH['rate'];
-      rateValueLTC = recievedDataLTC['rate'];
-    });
-  }
-//make get data & updateUi in same function getData
-
-  // void updateUI(dynamic recievedData) {
-  //   setState(() {
-  //     selectedFromCurrency = recievedData['asset_id_base'];
-  //     selectedCurrency = recievedData['asset_id_quote'];
-  //     rateValue = recievedData['rate'];
-  //   });
-  // }
-
   @override
   void initState() {
     super.initState();
-    getData(); // Call getData() when the screen loads up
+    getCurrencies();
   }
 
+  void getCurrencies() async {
+    var currenciesDate = await NetworkHelper().getData();
+    var rate = currenciesDate['rate'];
+    entries.add(rate);
+    setState(() {});
+    print(entries);
+  }
+
+  final List<String> typeCurrency = <String>[];
+  final List<double> entries = <double>[];
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('🤑 Coin Ticker'),
-        centerTitle: true,
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-            child: Card(
-              color: Colors.lightBlueAccent,
-              elevation: 5.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 15.0, horizontal: 28.0),
-                child: Text(
-                  '1 BTC = $rateValueBTC $selectedCurrency',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.white,
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.separated(
+              itemBuilder: (context, index) {
+                if (index == 0 || index == entries.length + 1) {
+                  return Container();
+                }
+                return Container(
+                  height: 50,
+                  color: Colors.amber[200 + index % 4 * 100],
+                  child: Center(child: Text('Entry ${entries[index - 1]}')),
+                );
+              },
+              separatorBuilder: (context, index) => const Divider(
+                    height: .05,
                   ),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-            child: Card(
-              color: Colors.lightBlueAccent,
-              elevation: 5.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 15.0, horizontal: 28.0),
-                child: Text(
-                  '1 ETH = $rateValueETH $selectedCurrency',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-            child: Card(
-              color: Colors.lightBlueAccent,
-              elevation: 5.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 15.0, horizontal: 28.0),
-                child: Text(
-                  '1 LTC = $rateValueLTC $selectedCurrency',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Container(
-            height: 150.0,
-            alignment: Alignment.center,
-            padding: const EdgeInsets.only(bottom: 30.0),
-            color: Colors.lightBlue,
-            child: Platform.isIOS ? iOSPicker() : androidDropdown(),
-          ),
-        ],
-      ),
+              itemCount: entries.length + 2),
+        ),
+        TextButton(onPressed: () => getCurrencies(), child: const Text('Add')),
+      ],
     );
   }
 }
